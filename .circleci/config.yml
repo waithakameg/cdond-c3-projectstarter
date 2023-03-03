@@ -469,7 +469,6 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            # your code here
             export STACKS=($(aws cloudformation list-stacks\
                --query "StackSummaries[*].StackName" \
                --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
