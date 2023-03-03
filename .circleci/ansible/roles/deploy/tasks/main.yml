@@ -21,20 +21,46 @@
   args:
     chdir: /home/ubuntu/backend-app
 
-- name: "Executing Node app with PM2"
-  command: |
-    cd ~/backend-app/dist
+# - name: "Executing Node app with PM2"
+#   command: |
+#     cd ~/backend-app/dist
 
-    cd ../
+#     cd ../
+#     npm install
+
+#     npm run build
+
+#     sudo npm install forever -g
+#     sudo npm install ts-node -g
+#     forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
+
+- name: Change directory to backend-app/dist
+  become: yes
+  become_user: ubuntu
+  shell: cd /home/ubuntu/backend-app/dist
+  args:
+    chdir: /home/ubuntu/backend-app/dist
+
+- name: Install dependencies
+  become: yes
+  become_user: ubuntu
+  shell: |
     npm install
-
     npm run build
+    sudo npm install -g forever
+    sudo npm install -g ts-node
+  args:
+    chdir: /home/ubuntu/backend-app
 
-    sudo npm install forever -g
-    sudo npm install ts-node -g
-    forever start -c "ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts" ./
+- name: Start the application with forever
+  become: yes
+  become_user: ubuntu
+  shell: forever start -c 'ts-node -r tsconfig-paths/register -r dotenv/config src/main.ts' .
+  args:
+    chdir: /home/ubuntu/backend-app/dist
 
   register: execute_node
+
 
 - name: print message
   debug:
